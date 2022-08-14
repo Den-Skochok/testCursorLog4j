@@ -22,14 +22,14 @@ Configuration:
         fileName: ${projectLogger}/logsNotOverwritten.log
         PatternLayout:
           Pattern: "%level %d{yyyy-MM-dd HH-mm-ss} %class{1}:%L - %msg%n"
-        Filters:
-          ThresholdFilter:
-            level: warn
-            onMatch: DENY
-            onMismatch: NEUTRAL
+#        Filters:
+#          ThresholdFilter:
+#            level: warn
+#            onMatch: DENY
+#            onMismatch: NEUTRAL
 
     RollingFile:
-      -
+      - #By Size
         name: logOverwrittenBySizeFile
         fileName: ${projectLogger}/OverWritten/logOverwrittenBySizeFile.log
         filePattern: ${projectLogger}/OverWritten/logOverwrittenBySizeFile.log
@@ -38,11 +38,17 @@ Configuration:
         Policies:
           SizeBasedTriggeringPolicy:
             size: 100 B
+        Filters:
+          ThresholdFilter:
+            level: warn
+            onMatch: DENY
+            onMismatch: NEUTRAL
 
-      -
-        name: logOverwrittenEveryDayFile
-        fileName: ${projectLogger}/OverWritten/logOverwrittenEveryDayFile.log
-        filePattern: ${projectLogger}/OverWritten/logOverwrittenEveryDayFile.log
+
+      - #Every Day by time
+        name: logOverwrittenEveryDayByTimeFile
+        fileName: ${projectLogger}/OverWritten/logOverwrittenEveryDayByTimeFile.log
+        filePattern: ${projectLogger}/OverWritten/logOverwrittenEveryDayByTimeFile.log
         PatternLayout:
           Pattern: "%level %d{yyyy-MM-dd HH-mm-ss} %class{1}:%L - %msg%n"
         CronTriggeringPolicy:
@@ -51,6 +57,16 @@ Configuration:
         DefaultRolloverStrategy:
           max: 1
 
+      - #Every Day
+        name: logOverwrittenEveryDayFile
+        fileName: ${projectLogger}/OverWritten/logOverwrittenEveryDayFile.log
+        filePattern: ${projectLogger}/OverWritten/logOverwrittenEveryDayFile-%d{yyyy-MM-dd}.log
+        PatternLayout:
+          Pattern: "%level %d{yyyy-MM-dd HH-mm-ss} %class{1}:%L - %msg%n"
+        Policies:
+          TimeBasedTriggeringPolicy:
+            interval: 1
+            modulate: true
 
 #      #Sent on e-mail
 #    SMTP:
@@ -73,10 +89,12 @@ Configuration:
       level: all
       AppenderRef:
         - ref: logNotOverwrittenFile
-          level: info
+          level: error
         - ref: logOverwrittenBySizeFile
           level: info
         - ref: logOverwrittenEveryDayFile
+          level: info
+        - ref: logOverwrittenEveryDayByTimeFile
           level: info
         - ref: projectConsole
           level: warn
