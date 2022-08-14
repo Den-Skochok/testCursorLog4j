@@ -19,7 +19,7 @@ Configuration:
     File:
       -
         name: logNotOverwrittenFile
-        fileName: ${projectLogger}/logsNotOverwritten-${date:yyyy-MM-dd}.log
+        fileName: ${projectLogger}/logsNotOverwritten.log
         PatternLayout:
           Pattern: "%level %d{yyyy-MM-dd HH-mm-ss} %class{1}:%L - %msg%n"
         Filters:
@@ -72,6 +72,8 @@ Configuration:
     Root:
       level: all
       AppenderRef:
+        - ref: logNotOverwrittenFile
+          level: info
         - ref: logOverwrittenBySizeFile
           level: info
         - ref: logOverwrittenEveryDayFile
