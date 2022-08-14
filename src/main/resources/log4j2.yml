@@ -1,0 +1,83 @@
+Configuration:
+  Properties:
+    Property:
+      name: projectLogger
+      value: logs
+
+  Appenders:
+    Console:
+      - name: projectConsole
+        PatternLayout:
+          disableAnsi: false%msg
+          Pattern: "%highlight{%-5level}{FATAL=bg_red} %style{%data{yyyy-MM-dd HH:mm:ss.SSS}}{blue} %class{1}:%L - %highlight{%msg} %xEx{short}%n"
+        Filters:
+          ThresholdFilter:
+            level: error
+            onMatch: DENY
+            onMismatch: NEUTRAL
+
+    File:
+      -
+        name: logNotOverwrittenFile
+        fileName: ${projectLogger}/logsNotOverwritten-${date:yyyy-MM-dd}.log
+        PatternLayout:
+          Pattern: "%level %d{yyyy-MM-dd HH-mm-ss} %class{1}:%L - %msg%n"
+        Filters:
+          ThresholdFilter:
+            level: warn
+            onMatch: DENY
+            onMismatch: NEUTRAL
+
+    RollingFile:
+      -
+        name: logOverwrittenBySizeFile
+        fileName: ${projectLogger}/OverWritten/logOverwrittenBySizeFile.log
+        filePattern: ${projectLogger}/OverWritten/logOverwrittenBySizeFile.log
+        PatternLayout:
+          Pattern: "%level %d{yyyy-MM-dd HH-mm-ss} %class{1}:%L - %msg%n"
+        Policies:
+          SizeBasedTriggeringPolicy:
+            size: 100 B
+
+      -
+        name: logOverwrittenEveryDayFile
+        fileName: ${projectLogger}/OverWritten/logOverwrittenEveryDayFile.log
+        filePattern: ${projectLogger}/OverWritten/logOverwrittenEveryDayFile.log
+        PatternLayout:
+          Pattern: "%level %d{yyyy-MM-dd HH-mm-ss} %class{1}:%L - %msg%n"
+        CronTriggeringPolicy:
+          schedule: "0 00 10 ? * *"
+          evaluateOnStartup: true
+        DefaultRolloverStrategy:
+          max: 1
+
+
+#      #Sent on e-mail
+#    SMTP:
+#      name: MailSendAppender
+#      subject: "testLogCursor"
+#      to: "testlog4jtest@gmail.com"
+#      from: "testlog4jtest@gmail.com"
+#      smtpHost: "smtp.gmail.com"
+#      smtpPort: 465
+#      smtpProtocol: smtps
+#      smtpUsername: "testlog4jtest@gmail.com"
+#      smtpPassword: "testlog4jTEST"
+#      bufferSize: 512
+#      HTMLLayout:
+#        charset: "UTF-8"
+#        title: "Logs"
+
+  Loggers:
+    Root:
+      level: all
+      AppenderRef:
+        - ref: logOverwrittenBySizeFile
+          level: info
+        - ref: logOverwrittenEveryDayFile
+          level: info
+        - ref: projectConsole
+          level: warn
+        - ref: MailSendAppender
+          level: warn
+#    Logger:
